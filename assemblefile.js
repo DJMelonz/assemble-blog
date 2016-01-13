@@ -1,6 +1,5 @@
-var assemble = require('assemble')
+var assemble = require('assemble');
 var extname = require('gulp-extname');
-var browserSync = require('browser-sync').create();
 var app = assemble();
 
 /**
@@ -33,11 +32,7 @@ app.data({
 
 app.task('assets', function () {
     return app.src('src/assets/**/*')
-        .pipe(app.dest('dist/assets/'))
-        .pipe(browserSync.reload({stream: true}));
-});
-
-app.task('serve', function () {
+        .pipe(app.dest('dist/assets/'));
 });
 
 /**
@@ -69,18 +64,7 @@ app.task('content', ['load'], function () {
  * Default task
  */
 
-app.task('default', ['assets', 'content'], function() {
-    browserSync.init({
-        port: 8080,
-        startPath: 'index.html',
-        server: {
-            baseDir: 'dist'
-        },
-        reloadDelay: 1000
-    });
-    
-    app.watch('src/assets/**/*', ['assets']);
-});
+app.task('default', ['assets', 'content']);
 
 /**
  * Expose the assemble instance
