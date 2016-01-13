@@ -10,6 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "assemble": "^0.7.3",
+    "delete": "^0.3.0",
     "engine-handlebars": "^0.8.0",
     "gulp-extname": "^0.2.2",
     "helper-markdown": "^0.2.0"
