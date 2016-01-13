@@ -1,5 +1,6 @@
 var assemble = require('assemble');
 var del = require('delete');
+var prettify = require('gulp-prettify');
 var extname = require('gulp-extname');
 
 /**
@@ -9,11 +10,11 @@ var extname = require('gulp-extname');
 var app = assemble();
 
 /**
- * Create an instance of assemble
+ * 
  */
 
 app.create('pages');
-app.create('posts');
+app.create('contents');
 
 /**
  * Load helpers
@@ -21,7 +22,11 @@ app.create('posts');
 
 app.helpers('src/helpers/*.js');
 
-// app.option('layout', 'default');
+/**
+ * Set default layout (if none is specified)
+ */
+
+app.option('layout', 'default');
 
 /**
  * Add some basic site data (passed to templates)
@@ -29,7 +34,7 @@ app.helpers('src/helpers/*.js');
 
 app.data({
     site: {
-        title: 'My Site'
+        title: 'My Blog'
     }
 });
 
@@ -37,20 +42,20 @@ app.data({
  * Middleware
  */
 
-app.preLayout(/\.md$/, function(view, next) {
+app.preLayout(/\.md$/, function (view, next) {
     if (!view.layout) {
         view.layout = 'markdown';
     }
-  next();
+    next();
 });
 
 /**
  * Clean out the dist directory
  */
 
-app.task('clean', function(cb) {
-  var pattern = 'dist';
-  del(pattern, {force: true}, cb);
+app.task('clean', function (cb) {
+    var pattern = 'dist';
+    del(pattern, { force: true }, cb);
 });
 
 /**
@@ -58,11 +63,14 @@ app.task('clean', function(cb) {
  */
 
 app.task('load', function (cb) {
+    var pkg = require('./package');
+    console.log('Loading v', pkg.version);
+
     app.partials('src/templates/partials/*.hbs');
     app.layouts('src/templates/layouts/*.hbs');
-    app.pages('src/content/pages/*.{md,hbs}');
-    app.posts('src/content/posts/*.{md,hbs}');
-    
+    app.pages('src/templates/pages/*.{md,hbs}');
+    app.contents('src/content/**/*.{md,hbs}');
+
     cb();
 });
 
@@ -70,25 +78,16 @@ app.task('load', function (cb) {
  * Generate site
  */
 
-app.task('content', ['load', 'pages', 'posts']);
+app.task('content', ['load'], function () {
 
-function renderContent(stream, dist) {
-    return stream
+    return app.toStream('pages')
+        .pipe(app.toStream('contents'))
         .on('err', console.log)
         .pipe(app.renderFile())
         .on('err', console.log)
+        .pipe(prettify())
         .pipe(extname())
-        .pipe(app.dest(dist));
-}
-
-app.task('pages', function () {
-    var stream = app.toStream('pages');
-    return renderContent(stream, 'dist');
-});
-
-app.task('posts', function () {
-    var stream = app.toStream('posts');
-    return renderContent(stream, 'dist/blog');
+        .pipe(app.dest('dist'));
 });
 
 /**

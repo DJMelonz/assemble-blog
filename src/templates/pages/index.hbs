@@ -1,8 +1,12 @@
 ---
-title: Welcome to Assemble!
-layout: markdown
+layout: default
+
+title: Home
 ---
 
-{{title}}
+{{#markdown}}
+## Posts
+{{/markdown}}
 
-{{> nav }}
+{{log site}}
+{{log post}}
