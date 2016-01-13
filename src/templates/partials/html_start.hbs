@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+            {{#if title}}
+                <title>{{title}} - {{site.title}} - Blog and Portfolio for {{site.author}}</title>
+                <meta name="description" content="{{site.title}} - Blog and Portfolio for {{site.author}}">
+            {{else}}
+                <title>{{site.title}}- Blog and Portfolio for {{site.author}}</title>
+                <meta name="description" content="{{site.title}} - Blog and Portfolio for {{site.author}}">
+            {{/if}}
+    </head>
+  <body>

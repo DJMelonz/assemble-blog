@@ -34,7 +34,8 @@ app.option('layout', 'default');
 
 app.data({
     site: {
-        title: 'My Blog'
+        title: 'DamianMullins.co.uk',
+        author: 'Damian Mullins'
     }
 });
 
