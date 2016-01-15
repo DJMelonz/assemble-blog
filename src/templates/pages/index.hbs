@@ -8,5 +8,24 @@ title: Home
 ## Posts
 {{/markdown}}
 
-{{log site}}
-{{log post}}
+{{#contents}}
+    {{!#withSort items 'data.posted'}}
+    {{!log this.data.posted}}
+    {{#each items}}
+        {{#unless data.draft}}
+            <article>
+                <h1>{{data.title}}</h1>
+                <p>{{data.description}}</p>
+                <time>{{data.posted}}</time>
+                
+                <p>
+                {{#each data.categories}}
+                    <span>{{this}}</span>
+                {{/each}}
+                </p>
+            </article>
+        {{/unless}}
+        
+    {{/each}}
+	{{!/withSort}}
+{{/contents}}

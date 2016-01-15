@@ -64,9 +64,6 @@ app.task('clean', function (cb) {
  */
 
 app.task('load', function (cb) {
-    var pkg = require('./package');
-    console.log('Loading v', pkg.version);
-
     app.partials('src/templates/partials/*.hbs');
     app.layouts('src/templates/layouts/*.hbs');
     app.pages('src/templates/pages/*.{md,hbs}');
@@ -93,6 +90,7 @@ app.task('content', ['load'], function () {
 
 /**
  * Pre-process Assets
+ * TODO: Update once using scss & es2015
  */
 
 app.task('assets', function () {

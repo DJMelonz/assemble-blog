@@ -1,17 +1,15 @@
 ---
 layout: post
 
-title: Welcome
-description: "Welcome to my blog."
+title: Welcome title
+description: Suspendisse pharetra ac turpis ut rutrum.
 
-posted: 2012-09-24T13:00
-
-post:
-- post
+posted: 2015-09-25T13:00
+draft: false
 
 categories:
-  - "Responsive"
-  - "Web Development"
+    - Responsive
+    - Web Development
 ---
 
-Welcome to my blog.
+Suspendisse pharetra ac turpis ut rutrum. Suspendisse potenti. In facilisis ipsum sit amet sagittis lacinia. Mauris sit amet lorem sed ligula dapibus ultricies quis sit amet erat.

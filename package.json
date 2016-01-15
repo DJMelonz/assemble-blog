@@ -14,6 +14,7 @@
     "engine-handlebars": "^0.8.0",
     "gulp-extname": "^0.2.2",
     "gulp-prettify": "^0.4.0",
+    "handlebars-helpers": "^0.5.8",
     "helper-markdown": "^0.2.0"
   }
 }
