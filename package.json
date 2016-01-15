@@ -10,11 +10,12 @@
   "license": "ISC",
   "devDependencies": {
     "assemble": "^0.7.3",
+    "assemble-permalinks": "^0.3.1",
     "delete": "^0.3.0",
     "engine-handlebars": "^0.8.0",
     "gulp-extname": "^0.2.2",
     "gulp-prettify": "^0.4.0",
-    "handlebars-helpers": "^0.5.8",
-    "helper-markdown": "^0.2.0"
+    "helper-markdown": "^0.2.0",
+    "mixin-deep": "^1.1.3"
   }
 }

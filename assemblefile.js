@@ -1,4 +1,9 @@
+'use strict';
+
+var path = require('path');
+var merge = require('mixin-deep');
 var assemble = require('assemble');
+var permalinks = require('assemble-permalinks');
 var del = require('delete');
 var prettify = require('gulp-prettify');
 var extname = require('gulp-extname');
@@ -10,11 +15,50 @@ var extname = require('gulp-extname');
 var app = assemble();
 
 /**
+ * Plugins
+ */
+
+function viewEvents(eventName) {
+  var method = 'on'
+    + eventName.charAt(0).toUpperCase()
+    + eventName.slice(1);
+
+  return function(app) {
+    app.handler(method);
+    app.use(function(app) {
+      return function(views) {
+        return function() {
+          this.on(eventName, function(view) {
+            app.emit(eventName, view);
+            app.handle(method, view);
+          });
+        };
+      };
+    });
+  };
+}
+
+app.use(viewEvents('permalink'));
+app.use(permalinks());
+
+app.onPermalink(/./, function(file, next) {
+  file.data = merge({}, app.cache.data, file.data);
+  next();
+});
+
+/**
  * 
  */
 
 app.create('pages');
-app.create('contents');
+app.create('contents', {
+  renameKey: function(key, view) {
+    return view ? view.basename : path.basename(key);
+  }
+});
+
+app.pages.use(permalinks(':site.base/:filename.html'));
+app.contents.use(permalinks(':site.base/blog/:filename.html'));
 
 /**
  * Load helpers
@@ -64,8 +108,8 @@ app.task('clean', function (cb) {
  */
 
 app.task('load', function (cb) {
-    app.partials('src/templates/partials/*.hbs');
     app.layouts('src/templates/layouts/*.hbs');
+    app.partials('src/templates/partials/*.hbs');
     app.pages('src/templates/pages/*.{md,hbs}');
     app.contents('src/content/**/*.{md,hbs}');
 
@@ -85,7 +129,14 @@ app.task('content', ['load'], function () {
         .on('err', console.log)
         .pipe(prettify())
         .pipe(extname())
-        .pipe(app.dest('dist'));
+        // .pipe(app.dest('dist'));
+        .pipe(app.dest(function (file) {
+            console.log(file.data.permalink);
+            console.log(path.dirname(file.path));
+            file.path = file.data.permalink;
+            file.base = path.dirname(file.path);
+            return file.base;
+        }));
 });
 
 /**
