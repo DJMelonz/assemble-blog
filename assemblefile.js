@@ -19,31 +19,31 @@ var app = assemble();
  */
 
 function viewEvents(eventName) {
-  var method = 'on'
-    + eventName.charAt(0).toUpperCase()
-    + eventName.slice(1);
+    var method = 'on'
+        + eventName.charAt(0).toUpperCase()
+        + eventName.slice(1);
 
-  return function(app) {
-    app.handler(method);
-    app.use(function(app) {
-      return function(views) {
-        return function() {
-          this.on(eventName, function(view) {
-            app.emit(eventName, view);
-            app.handle(method, view);
-          });
-        };
-      };
-    });
-  };
+    return function (app) {
+        app.handler(method);
+        app.use(function (app) {
+            return function (views) {
+                return function () {
+                    this.on(eventName, function (view) {
+                        app.emit(eventName, view);
+                        app.handle(method, view);
+                    });
+                };
+            };
+        });
+    };
 }
 
 app.use(viewEvents('permalink'));
 app.use(permalinks());
 
-app.onPermalink(/./, function(file, next) {
-  file.data = merge({}, app.cache.data, file.data);
-  next();
+app.onPermalink(/./, function (file, next) {
+    file.data = merge({}, app.cache.data, file.data);
+    next();
 });
 
 /**
@@ -51,14 +51,14 @@ app.onPermalink(/./, function(file, next) {
  */
 
 app.create('pages');
-app.create('contents', {
-  renameKey: function(key, view) {
-    return view ? view.basename : path.basename(key);
-  }
+app.create('posts', {
+    renameKey: function (key, view) {
+        return view ? view.basename : path.basename(key);
+    }
 });
 
 app.pages.use(permalinks(':site.base/:filename.html'));
-app.contents.use(permalinks(':site.base/blog/:filename.html'));
+app.posts.use(permalinks(':site.base/blog/:filename.html'));
 
 /**
  * Load helpers
@@ -78,6 +78,7 @@ app.option('layout', 'default');
 
 app.data({
     site: {
+        base: 'dist',
         title: 'DamianMullins.co.uk',
         author: 'Damian Mullins'
     }
@@ -110,8 +111,8 @@ app.task('clean', function (cb) {
 app.task('load', function (cb) {
     app.layouts('src/templates/layouts/*.hbs');
     app.partials('src/templates/partials/*.hbs');
-    app.pages('src/templates/pages/*.{md,hbs}');
-    app.contents('src/content/**/*.{md,hbs}');
+    app.pages('src/pages/*.{md,hbs}');
+    app.posts('src/posts/*.{md,hbs}');
 
     cb();
 });
@@ -123,16 +124,13 @@ app.task('load', function (cb) {
 app.task('content', ['load'], function () {
 
     return app.toStream('pages')
-        .pipe(app.toStream('contents'))
+        .pipe(app.toStream('posts'))
         .on('err', console.log)
         .pipe(app.renderFile())
         .on('err', console.log)
         .pipe(prettify())
         .pipe(extname())
-        // .pipe(app.dest('dist'));
         .pipe(app.dest(function (file) {
-            console.log(file.data.permalink);
-            console.log(path.dirname(file.path));
             file.path = file.data.permalink;
             file.base = path.dirname(file.path);
             return file.base;
